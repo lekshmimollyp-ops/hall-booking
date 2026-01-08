@@ -1,0 +1,26 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Backend via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /var/www/hall-booking/backend
+            git pull origin main
+            composer install --no-dev
+            php artisan migrate --force
+            
+            cd /var/www/hall-booking/frontend
+            git pull origin main
+            npm install
+            npm run build
