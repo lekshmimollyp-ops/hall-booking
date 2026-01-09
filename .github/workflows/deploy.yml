@@ -5,8 +5,45 @@ on:
     branches: [ main ]
 
 jobs:
-  deploy:
+  build-and-test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, bcmath, pdo, pdo_pgsql
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: |
+          composer install --prefer-dist --no-progress
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run Backend Tests
+        working-directory: ./backend
+        run: php artisan test
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Deploy Backend via SSH
         uses: appleboy/ssh-action@master
@@ -15,12 +52,17 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /var/www/hall-booking/backend
+            cd /var/www/hall-booking
             git pull origin main
+            
+            cd backend
             composer install --no-dev
             php artisan migrate --force
+            php artisan optimize:clear
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
             
-            cd /var/www/hall-booking/frontend
-            git pull origin main
+            cd ../frontend
             npm install
             npm run build

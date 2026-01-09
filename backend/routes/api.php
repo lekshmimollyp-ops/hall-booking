@@ -17,6 +17,10 @@ use App\Http\Controllers\ReportController;
 
 // Public Routes
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/login', function() {
+    return response()->json(['message' => 'Unauthorized'], 401);
+})->name('login');
+
 Route::get('/public/calendar/{centerId}', [EventController::class, 'publicCalendar']);
 
 // Protected Routes
