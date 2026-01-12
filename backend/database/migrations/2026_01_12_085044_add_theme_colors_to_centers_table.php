@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('centers', function (Blueprint $table) {
-            //
+            $table->string('background_color')->nullable()->default('#ffffff');
+            $table->string('font_color')->nullable()->default('#111827');
         });
     }
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('centers', function (Blueprint $table) {
-            //
+            $table->dropColumn(['background_color', 'font_color']);
         });
     }
 };
