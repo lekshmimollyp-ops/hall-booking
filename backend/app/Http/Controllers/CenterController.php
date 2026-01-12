@@ -38,13 +38,15 @@ class CenterController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'logo_url' => 'nullable|string', // Check URL validity if possible, but string is fine
-            'primary_color' => 'nullable|string|size:7', // Hex code
+            'logo_url' => 'nullable|string', 
+            'primary_color' => 'nullable|string|size:7', 
+            'background_color' => 'nullable|string|size:7',
+            'font_color' => 'nullable|string|size:7',
             'address' => 'nullable|string',
             'contact_phone' => 'nullable|string',
         ]);
 
-        $center->update($request->only(['name', 'logo_url', 'primary_color', 'address', 'contact_phone']));
+        $center->update($request->only(['name', 'logo_url', 'primary_color', 'background_color', 'font_color', 'address', 'contact_phone']));
 
         return response()->json($center);
     }

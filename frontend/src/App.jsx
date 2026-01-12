@@ -15,6 +15,16 @@ import Expenses from './pages/Expenses';
 import './App.css';
 
 function App() {
+  React.useEffect(() => {
+    const primary = localStorage.getItem('center_color');
+    const background = localStorage.getItem('center_bg');
+    const font = localStorage.getItem('center_font');
+
+    if (primary) document.documentElement.style.setProperty('--primary', primary);
+    if (background) document.documentElement.style.setProperty('--background', background);
+    if (font) document.documentElement.style.setProperty('--text-main', font);
+  }, []);
+
   return (
     <Router>
       <Routes>

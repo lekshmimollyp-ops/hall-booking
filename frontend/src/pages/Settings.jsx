@@ -11,6 +11,8 @@ const Settings = () => {
         name: '',
         logo_url: '',
         primary_color: '#000000',
+        background_color: '#ffffff',
+        font_color: '#111827',
         address: '',
         contact_phone: ''
     });
@@ -39,6 +41,8 @@ const Settings = () => {
                 name: res.data.name || '',
                 logo_url: res.data.logo_url || '',
                 primary_color: res.data.primary_color || '#000000',
+                background_color: res.data.background_color || '#ffffff',
+                font_color: res.data.font_color || '#111827',
                 address: res.data.address || '',
                 contact_phone: res.data.contact_phone || ''
             });
@@ -69,6 +73,12 @@ const Settings = () => {
             // window.location.reload(); // Optional: to refresh sidebar immediately
             // Better: Dispatch a custom event or let the user see the message
             document.documentElement.style.setProperty('--primary', res.data.primary_color);
+            document.documentElement.style.setProperty('--background', res.data.background_color);
+            document.documentElement.style.setProperty('--text-main', res.data.font_color);
+
+            // Store in LocalStorage for persistence
+            localStorage.setItem('center_bg', res.data.background_color);
+            localStorage.setItem('center_font', res.data.font_color);
 
         } catch (error) {
             setMessage('Failed to update settings.');
@@ -192,21 +202,57 @@ const Settings = () => {
                                         )}
                                     </div>
 
-                                    <div style={{ marginBottom: '1.5rem' }}>
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Primary Color</label>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                            <input
-                                                type="color"
-                                                style={{ width: '50px', height: '40px', padding: 0, border: 'none', cursor: 'pointer' }}
-                                                value={formData.primary_color}
-                                                onChange={e => setFormData({ ...formData, primary_color: e.target.value })}
-                                            />
-                                            <input
-                                                type="text"
-                                                style={{ width: '100px', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
-                                                value={formData.primary_color}
-                                                onChange={e => setFormData({ ...formData, primary_color: e.target.value })}
-                                            />
+                                    <div style={{ marginBottom: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Primary Color</label>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <input
+                                                    type="color"
+                                                    style={{ width: '40px', height: '40px', padding: 0, border: 'none', cursor: 'pointer' }}
+                                                    value={formData.primary_color}
+                                                    onChange={e => setFormData({ ...formData, primary_color: e.target.value })}
+                                                />
+                                                <input
+                                                    type="text"
+                                                    style={{ width: '80px', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                                                    value={formData.primary_color}
+                                                    onChange={e => setFormData({ ...formData, primary_color: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Background Color</label>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <input
+                                                    type="color"
+                                                    style={{ width: '40px', height: '40px', padding: 0, border: 'none', cursor: 'pointer' }}
+                                                    value={formData.background_color || '#ffffff'}
+                                                    onChange={e => setFormData({ ...formData, background_color: e.target.value })}
+                                                />
+                                                <input
+                                                    type="text"
+                                                    style={{ width: '80px', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                                                    value={formData.background_color || '#ffffff'}
+                                                    onChange={e => setFormData({ ...formData, background_color: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Font Color</label>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <input
+                                                    type="color"
+                                                    style={{ width: '40px', height: '40px', padding: 0, border: 'none', cursor: 'pointer' }}
+                                                    value={formData.font_color || '#111827'}
+                                                    onChange={e => setFormData({ ...formData, font_color: e.target.value })}
+                                                />
+                                                <input
+                                                    type="text"
+                                                    style={{ width: '80px', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                                                    value={formData.font_color || '#111827'}
+                                                    onChange={e => setFormData({ ...formData, font_color: e.target.value })}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 

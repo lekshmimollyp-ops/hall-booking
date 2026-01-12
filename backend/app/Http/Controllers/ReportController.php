@@ -15,9 +15,11 @@ class ReportController extends Controller
         $centerId = $request->validated_center_id;
         $currentMonth = now()->month;
 
-        $monthlyIncome = Income::where('center_id', $centerId)
-                               ->whereMonth('received_date', $currentMonth)
-                               ->sum('amount_received');
+        // REF: User requested Income based on Booking Date (Event Date), not Received Date
+        $monthlyIncome = Income::join('events', 'incomes.event_id', '=', 'events.id')
+                               ->where('incomes.center_id', $centerId)
+                               ->whereMonth('events.event_date', $currentMonth)
+                               ->sum('incomes.amount_received');
 
         $monthlyExpense = Expense::where('center_id', $centerId)
                                  ->whereMonth('expense_date', $currentMonth)
@@ -40,7 +42,11 @@ class ReportController extends Controller
                              ->groupBy('event_type')
                              ->get();
 
+        $center = \App\Models\Center::find($centerId);
+
         return response()->json([
+            'center_name' => $center ? $center->name : 'Unknown Center',
+            'center_id' => $centerId,
             'monthly_income' => $monthlyIncome,
             'monthly_expense' => $monthlyExpense,
             'profit' => $monthlyIncome - $monthlyExpense,
@@ -57,16 +63,19 @@ class ReportController extends Controller
         $startDate = $request->start_date;
         $endDate = $request->end_date;
 
-        $incomeQuery = Income::where('center_id', $centerId);
+        // REF: Income now based on Event Date
+        $incomeQuery = Income::join('events', 'incomes.event_id', '=', 'events.id')
+                             ->where('incomes.center_id', $centerId);
+        
         $expenseQuery = Expense::where('center_id', $centerId);
 
         if ($startDate && $endDate) {
-            $incomeQuery->whereBetween('received_date', [$startDate, $endDate]);
+            $incomeQuery->whereBetween('events.event_date', [$startDate, $endDate]);
             $expenseQuery->whereBetween('expense_date', [$startDate, $endDate]);
         }
 
         $income = $incomeQuery
-            ->selectRaw("TO_CHAR(received_date, 'YYYY-MM') as month, SUM(amount_received) as total")
+            ->selectRaw("TO_CHAR(events.event_date, 'YYYY-MM') as month, SUM(incomes.amount_received) as total")
             ->groupBy('month')
             ->orderBy('month', 'desc')
             ->get()

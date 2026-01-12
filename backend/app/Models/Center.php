@@ -13,6 +13,8 @@ class Center extends Model
         'name',
         'logo_url',
         'primary_color',
+        'background_color',
+        'font_color',
         'address',
         'contact_phone',
         'status',

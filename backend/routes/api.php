@@ -16,6 +16,23 @@ use App\Http\Controllers\ReportController;
 */
 
 // Public Routes
+Route::any('/test', function() {
+    return response()->json([
+        'status' => 'OK', 
+        'path' => request()->path(),
+        'url' => request()->url()
+    ]);
+});
+
+Route::get('/debug-cors', function() {
+    return response()->json([
+        'cors_config' => config('cors'),
+        'server_headers' => request()->headers->all()
+    ])->header('Access-Control-Allow-Origin', '*');
+});
+
+
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/login', function() {
     return response()->json(['message' => 'Unauthorized'], 401);
