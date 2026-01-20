@@ -91,7 +91,7 @@ class EventController extends Controller
                     'event_id' => $event->id,
                     'amount_received' => $request->advance_amount,
                     'received_date' => now(), // Assume received today
-                    'payment_mode' => 'Cash', // Default to Cash for initial advance
+                    'payment_mode' => 'cash', // Default to cash for initial advance
                     'created_by' => $request->user()->id,
                 ]);
             }

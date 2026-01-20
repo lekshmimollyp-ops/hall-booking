@@ -12,7 +12,7 @@ import {
     FaBell
 } from 'react-icons/fa';
 
-const Sidebar = ({ onLogout, centerName, centerLogo }) => {
+const Sidebar = ({ onLogout, centerName, centerLogo, isMobile, isOpen, onClose }) => {
     const menuItems = [
         { path: '/dashboard', label: 'Dashboard', icon: <FaHome /> },
         { path: '/settings', label: 'Settings', icon: <FaCogs /> },
@@ -26,42 +26,65 @@ const Sidebar = ({ onLogout, centerName, centerLogo }) => {
         { path: '/notifications', label: 'Notifications', icon: <FaBell /> },
     ];
 
+    const sidebarStyle = {
+        width: '260px',
+        backgroundColor: 'var(--surface)',
+        borderRight: '1px solid var(--border)',
+        height: '100vh',
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 20,
+        transition: 'transform 0.3s ease-in-out',
+        transform: isMobile && !isOpen ? 'translateX(-100%)' : 'translateX(0)',
+        boxShadow: isMobile && isOpen ? '4px 0 24px rgba(0,0,0,0.1)' : 'none'
+    };
+
     return (
-        <aside style={{
-            width: '260px',
-            backgroundColor: 'var(--surface)',
-            borderRight: '1px solid var(--border)',
-            height: '100vh',
-            position: 'fixed',
-            left: 0,
-            top: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            zIndex: 10
-        }}>
+        <aside style={sidebarStyle}>
             <div style={{
                 padding: '1.5rem',
                 borderBottom: '1px solid var(--border)',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'space-between',
                 gap: '0.75rem'
             }}>
-                {centerLogo ? (
-                    <img src={centerLogo} alt="Logo" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'contain' }} />
-                ) : (
-                    <div style={{
-                        width: '32px',
-                        height: '32px',
-                        backgroundColor: 'var(--primary)',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontWeight: 'bold'
-                    }}>{centerName.substring(0, 2).toUpperCase()}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflow: 'hidden' }}>
+                    {centerLogo ? (
+                        <img src={centerLogo} alt="Logo" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'contain' }} />
+                    ) : (
+                        <div style={{
+                            width: '32px',
+                            height: '32px',
+                            backgroundColor: 'var(--primary)',
+                            borderRadius: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            flexShrink: 0
+                        }}>{centerName.substring(0, 2).toUpperCase()}</div>
+                    )}
+                    <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-main)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{centerName}</span>
+                </div>
+                {isMobile && (
+                    <button
+                        onClick={onClose}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            fontSize: '1.25rem',
+                            color: 'var(--text-muted)',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        &#10005;
+                    </button>
                 )}
-                <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-main)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{centerName}</span>
             </div>
 
             <nav style={{ flex: 1, padding: '1.5rem 1rem', overflowY: 'auto' }}>
@@ -70,6 +93,7 @@ const Sidebar = ({ onLogout, centerName, centerLogo }) => {
                         <li key={item.path}>
                             <NavLink
                                 to={item.path}
+                                onClick={() => isMobile && onClose()}
                                 style={({ isActive }) => ({
                                     display: 'flex',
                                     alignItems: 'center',

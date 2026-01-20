@@ -73,7 +73,7 @@ return new class extends Migration
             $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
             $table->decimal('amount_received', 10, 2);
             $table->date('received_date');
-            $table->enum('payment_mode', ['cash', 'bank', 'upi', 'other']);
+            $table->enum('payment_mode', ['cash', 'card', 'upi', 'bank_transfer', 'cheque', 'other']);
             $table->foreignId('created_by')->constrained('users');
             $table->timestamp('created_at')->useCurrent();
         });

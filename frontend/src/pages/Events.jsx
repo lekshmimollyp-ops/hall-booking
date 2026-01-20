@@ -470,9 +470,11 @@ const Events = () => {
                                             <select style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                                                 value={paymentData.payment_mode} onChange={e => setPaymentData({ ...paymentData, payment_mode: e.target.value })}>
                                                 <option value="cash">Cash</option>
+                                                <option value="card">Card</option>
                                                 <option value="upi">UPI</option>
-                                                <option value="bank">Bank Transfer</option>
-                                                <option value="other">Cheque/Other</option>
+                                                <option value="bank_transfer">Bank Transfer</option>
+                                                <option value="cheque">Cheque</option>
+                                                <option value="other">Other</option>
                                             </select>
                                         </div>
                                         <button type="submit" style={{ padding: '0.6rem 1rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold' }}>

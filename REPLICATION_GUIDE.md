@@ -55,7 +55,18 @@ sudo mv composer.phar /usr/local/bin/composer
     ```bash
     php artisan migrate --seed
     ```
-    *This creates the initial Admin user and default settings.*
+    *This creates the initial Admin user, default settings, and sets up payment mode constraints.*
+
+3.  **Verify Payment Modes** (Important):
+    ```bash
+    php artisan tinker
+    ```
+    ```php
+    DB::table('incomes')->select('payment_mode')->distinct()->get();
+    exit
+    ```
+    *The system supports 6 payment modes: `cash`, `card`, `upi`, `bank_transfer`, `cheque`, `other`*
+    *All payment modes must be lowercase for database compatibility.*
 
 ### D. File Permissions
 Ensure the web server can write to logs and cache:
@@ -63,7 +74,8 @@ sudo chmod -R 775 storage bootstrap/cache
 ```
 
 ### E. Nginx Configuration (Critical)
-To avoid 404 errors, use this **Single Root Strategy**.
+**IMPORTANT:** This configuration ensures static assets (JS/CSS) are served correctly while routing API calls to Laravel.
+
 Create `/etc/nginx/sites-available/new-client` with this exact content:
 
 ```nginx
@@ -75,12 +87,20 @@ server {
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
 
-    index index.php index.html;
+    index index.html;
 
     charset utf-8;
 
-    # Handle React Frontend (Fallthrough to index.php)
-    location / {
+    # Serve static assets directly (JS, CSS, images, etc.)
+    # This prevents them from being routed to index.html
+    location /assets/ {
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # API routes go to Laravel
+    location /api {
         try_files $uri $uri/ /index.php?$query_string;
     }
 
@@ -89,6 +109,11 @@ server {
         fastcgi_pass unix:/run/php/php8.2-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
+    }
+
+    # Frontend SPA routing - serve index.html for all other routes
+    location / {
+        try_files $uri $uri/ /index.html;
     }
 
     location ~ /\.(?!well-known).* {
@@ -143,3 +168,31 @@ npx eas-cli build --platform android --profile production
 - [ ] Is SSL enabled?
 - [ ] Can the Admin log in?
 - [ ] Does the Mobile App assume the correct Branding?
+- [ ] Can you create a booking with advance payment?
+- [ ] Can you add payments with all 6 payment modes (cash, card, upi, bank_transfer, cheque, other)?
+- [ ] Are there any SQL constraint errors when saving payments?
+
+## 7. Troubleshooting
+
+### Payment Mode Errors
+If you see SQL errors about payment_mode constraints:
+
+1. **Check EventController.php** (line 94):
+   - Must use lowercase: `'cash'` not `'Cash'`
+
+2. **Verify database constraint**:
+   ```bash
+   php artisan tinker
+   ```
+   ```php
+   DB::select("SELECT constraint_name, check_clause FROM information_schema.check_constraints WHERE constraint_name = 'incomes_payment_mode_check'");
+   ```
+
+3. **Supported payment modes** (all lowercase):
+   - `cash` - Cash payments
+   - `card` - Credit/Debit card
+   - `upi` - UPI/Digital wallets
+   - `bank_transfer` - Bank transfers
+   - `cheque` - Cheque payments
+   - `other` - Other methods
+

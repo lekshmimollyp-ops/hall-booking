@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hall Booking System - Interest Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            font-weight: 400;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ Hall Booking System</h1>
+            <p>Tell us about your venue - we'll help you streamline your bookings!</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ✅ Thank you! We've received your information and will contact you within 24 hours.
+        </div>
+
+        <form id="leadForm">
+            <!-- Contact Information -->
+            <div class="form-group">
+                <label for="name">Full Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required placeholder="John Doe">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="john@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number <span class="required">*</span></label>
+                <input type="tel" id="phone" name="phone" required placeholder="+91 98765 43210">
+            </div>
+
+            <!-- Venue Information -->
+            <div class="form-group">
+                <label for="venueName">Venue/Organization Name <span class="required">*</span></label>
+                <input type="text" id="venueName" name="venueName" required placeholder="MT Hall Pazhakutty">
+            </div>
+
+            <div class="form-group">
+                <label for="venueType">Venue Type <span class="required">*</span></label>
+                <select id="venueType" name="venueType" required>
+                    <option value="">-- Select Type --</option>
+                    <option value="religious">Religious Center (Church/Temple/Mosque)</option>
+                    <option value="community">Community Center</option>
+                    <option value="educational">Educational Institution</option>
+                    <option value="corporate">Corporate Event Space</option>
+                    <option value="banquet">Banquet Hall</option>
+                    <option value="hotel">Hotel/Resort</option>
+                    <option value="government">Government/Municipal</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location (City/State) <span class="required">*</span></label>
+                <input type="text" id="location" name="location" required placeholder="Trivandrum, Kerala">
+            </div>
+
+            <div class="form-group">
+                <label for="hallCount">Number of Halls/Rooms <span class="required">*</span></label>
+                <input type="number" id="hallCount" name="hallCount" required min="1" placeholder="2">
+            </div>
+
+            <div class="form-group">
+                <label for="bookingsPerMonth">Approximate Bookings per Month <span class="required">*</span></label>
+                <select id="bookingsPerMonth" name="bookingsPerMonth" required>
+                    <option value="">-- Select Range --</option>
+                    <option value="1-5">1-5 bookings</option>
+                    <option value="6-10">6-10 bookings</option>
+                    <option value="11-20">11-20 bookings</option>
+                    <option value="21-50">21-50 bookings</option>
+                    <option value="50+">50+ bookings</option>
+                </select>
+            </div>
+
+            <!-- Current System -->
+            <div class="form-group">
+                <label for="currentSystem">How do you currently manage bookings? <span class="required">*</span></label>
+                <select id="currentSystem" name="currentSystem" required>
+                    <option value="">-- Select Method --</option>
+                    <option value="manual">Manual (Paper/Notebook)</option>
+                    <option value="excel">Excel/Google Sheets</option>
+                    <option value="calendar">Google Calendar</option>
+                    <option value="software">Existing Software</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <!-- Features Needed -->
+            <div class="form-group">
+                <label>Features You're Most Interested In:</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="feature1" name="features" value="booking-management">
+                        <label for="feature1">Booking Management</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="feature2" name="features" value="expense-tracking">
+                        <label for="feature2">Expense Tracking</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="feature3" name="features" value="mobile-app">
+                        <label for="feature3">Mobile App</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="feature4" name="features" value="custom-branding">
+                        <label for="feature4">Custom Branding</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="feature5" name="features" value="reports">
+                        <label for="feature5">Reports & Analytics</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget -->
+            <div class="form-group">
+                <label for="budget">Budget Range (Monthly)</label>
+                <select id="budget" name="budget">
+                    <option value="">-- Select Budget --</option>
+                    <option value="under-100">Under $100</option>
+                    <option value="100-250">$100 - $250</option>
+                    <option value="250-500">$250 - $500</option>
+                    <option value="500+">$500+</option>
+                    <option value="flexible">Flexible</option>
+                </select>
+            </div>
+
+            <!-- Timeline -->
+            <div class="form-group">
+                <label for="timeline">When would you like to start? <span class="required">*</span></label>
+                <select id="timeline" name="timeline" required>
+                    <option value="">-- Select Timeline --</option>
+                    <option value="immediately">Immediately</option>
+                    <option value="1-month">Within 1 month</option>
+                    <option value="2-3-months">2-3 months</option>
+                    <option value="just-exploring">Just exploring options</option>
+                </select>
+            </div>
+
+            <!-- Additional Notes -->
+            <div class="form-group">
+                <label for="notes">Additional Notes or Questions</label>
+                <textarea id="notes" name="notes" placeholder="Tell us more about your needs..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Interest Form</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('leadForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Collect form data
+            const formData = new FormData(this);
+            const data = {};
+
+            // Get all form values
+            for (let [key, value] of formData.entries()) {
+                if (key === 'features') {
+                    if (!data.features) data.features = [];
+                    data.features.push(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+
+            // Format the data as a readable string
+            let emailBody = `NEW LEAD SUBMISSION\n\n`;
+            emailBody += `CONTACT INFORMATION:\n`;
+            emailBody += `Name: ${data.name}\n`;
+            emailBody += `Email: ${data.email}\n`;
+            emailBody += `Phone: ${data.phone}\n\n`;
+
+            emailBody += `VENUE INFORMATION:\n`;
+            emailBody += `Venue Name: ${data.venueName}\n`;
+            emailBody += `Type: ${data.venueType}\n`;
+            emailBody += `Location: ${data.location}\n`;
+            emailBody += `Number of Halls: ${data.hallCount}\n`;
+            emailBody += `Bookings/Month: ${data.bookingsPerMonth}\n\n`;
+
+            emailBody += `CURRENT SETUP:\n`;
+            emailBody += `Current System: ${data.currentSystem}\n\n`;
+
+            if (data.features && data.features.length > 0) {
+                emailBody += `INTERESTED FEATURES:\n`;
+                data.features.forEach(feature => {
+                    emailBody += `- ${feature}\n`;
+                });
+                emailBody += `\n`;
+            }
+
+            if (data.budget) {
+                emailBody += `Budget: ${data.budget}\n`;
+            }
+            emailBody += `Timeline: ${data.timeline}\n\n`;
+
+            if (data.notes) {
+                emailBody += `NOTES:\n${data.notes}\n`;
+            }
+
+            // Save to localStorage (you can replace this with actual API call)
+            const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+            leads.push({
+                ...data,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('leads', JSON.stringify(leads));
+
+            // Log to console (for demo purposes)
+            console.log('Lead Data:', data);
+            console.log('Email Body:', emailBody);
+
+            // Show success message
+            document.getElementById('successMessage').classList.add('show');
+
+            // Reset form
+            this.reset();
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.remove('show');
+            }, 5000);
+        });
+    </script>
+</body>
+
+</html>

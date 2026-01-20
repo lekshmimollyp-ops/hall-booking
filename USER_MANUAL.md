@@ -39,7 +39,14 @@ The **Dashboard** gives you a quick overview of the current month:
 ## 4. Financials
 ### Adding Income
 *   When a client pays the balance, go to **Incomes** > **Add Income**.
-*   Select the **Event**, enter the **Amount**, and Save.
+*   Select the **Event**, enter the **Amount**, and choose the **Payment Mode**:
+    - **Cash** - Cash payments
+    - **Card** - Credit/Debit card
+    - **UPI** - UPI/Digital wallets
+    - **Bank Transfer** - Bank transfers/NEFT/RTGS
+    - **Cheque** - Cheque payments
+    - **Other** - Any other payment method
+*   Click **Save**.
 
 ### Recording Expenses
 *   Go to **Expenses** > **Add Expense**.
