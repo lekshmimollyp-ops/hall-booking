@@ -13,12 +13,19 @@ class ExpenseController extends Controller
             'category_id' => 'required|exists:expense_categories,id',
             'amount' => 'required|numeric',
             'expense_date' => 'required|date',
+            'resource_id' => 'nullable|exists:resources,id',
         ]);
 
         $centerId = $request->validated_center_id;
 
+        // Validate user has access to the selected hall if provided
+        if ($request->resource_id && !$request->user()->hasAccessToResource($request->resource_id)) {
+            return response()->json(['message' => 'You do not have access to this hall.'], 403);
+        }
+
         $expense = Expense::create([
             'center_id' => $centerId,
+            'resource_id' => $request->resource_id, // Nullable - hall-specific
             'event_id' => $request->event_id, // Nullable
             'category_id' => $request->category_id,
             'amount' => $request->amount,
@@ -39,10 +46,17 @@ class ExpenseController extends Controller
 
     public function index(Request $request)
     {
-        $expenses = Expense::where('center_id', $request->validated_center_id)
-                           ->with(['category', 'event'])
-                           ->orderBy('expense_date', 'desc')
-                           ->get();
+        $query = Expense::where('center_id', $request->validated_center_id)
+                        ->with(['category', 'event', 'resource']);
+
+        // Filter by accessible halls (hall-based access control)
+        // Only show expenses for halls the user can access, or general expenses (null resource_id)
+        $query->where(function($q) use ($request) {
+            $q->whereIn('resource_id', $request->accessible_resource_ids)
+              ->orWhereNull('resource_id'); // Include general expenses
+        });
+
+        $expenses = $query->orderBy('expense_date', 'desc')->get();
         return response()->json($expenses);
     }
 
@@ -56,9 +70,16 @@ class ExpenseController extends Controller
             'category_id' => 'required|exists:expense_categories,id',
             'amount' => 'required|numeric',
             'expense_date' => 'required|date',
+            'resource_id' => 'nullable|exists:resources,id',
         ]);
 
+        // Validate user has access to the selected hall if provided
+        if ($request->resource_id && !$request->user()->hasAccessToResource($request->resource_id)) {
+            return response()->json(['message' => 'You do not have access to this hall.'], 403);
+        }
+
         $expense->update([
+            'resource_id' => $request->resource_id,
             'event_id' => $request->event_id,
             'category_id' => $request->category_id,
             'amount' => $request->amount,

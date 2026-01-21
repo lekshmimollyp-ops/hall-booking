@@ -6,6 +6,7 @@ const Expenses = () => {
     const [expenses, setExpenses] = useState([]);
     const [categories, setCategories] = useState([]);
     const [events, setEvents] = useState([]);
+    const [halls, setHalls] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
@@ -14,6 +15,7 @@ const Expenses = () => {
         expense_date: new Date().toISOString().split('T')[0],
         amount: '',
         category_id: '',
+        resource_id: '',
         event_id: '',
         description: ''
     });
@@ -23,15 +25,17 @@ const Expenses = () => {
             const token = localStorage.getItem('token');
             const headers = { Authorization: `Bearer ${token}` };
 
-            const [expRes, catRes, evtRes] = await Promise.all([
+            const [expRes, catRes, evtRes, hallRes] = await Promise.all([
                 axios.get('/api/expenses', { headers }),
                 axios.get('/api/expense-categories', { headers }),
-                axios.get('/api/events', { headers })
+                axios.get('/api/events', { headers }),
+                axios.get('/api/resources', { headers })
             ]);
 
             setExpenses(expRes.data);
             setCategories(catRes.data);
             setEvents(evtRes.data);
+            setHalls(hallRes.data);
         } catch (error) {
             console.error(error);
         } finally {
@@ -49,6 +53,7 @@ const Expenses = () => {
             expense_date: new Date().toISOString().split('T')[0],
             amount: '',
             category_id: categories.length > 0 ? categories[0].id : '',
+            resource_id: '',
             event_id: '',
             description: ''
         });
@@ -61,6 +66,7 @@ const Expenses = () => {
             expense_date: expense.expense_date,
             amount: expense.amount,
             category_id: expense.category_id,
+            resource_id: expense.resource_id || '',
             event_id: expense.event_id || '',
             description: expense.description || ''
         });
@@ -87,6 +93,7 @@ const Expenses = () => {
             const token = localStorage.getItem('token');
             const payload = {
                 ...formData,
+                resource_id: formData.resource_id || null,
                 event_id: formData.event_id || null // Ensure null if empty string
             };
 
@@ -150,6 +157,7 @@ const Expenses = () => {
                         <tr>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Date</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Category</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Hall</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Description</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Related Event</th>
                             <th style={{ padding: '1rem', textAlign: 'right', fontWeight: 600, color: 'var(--text-muted)' }}>Amount</th>
@@ -164,6 +172,15 @@ const Expenses = () => {
                                     <span style={{ padding: '0.25rem 0.5rem', background: '#F3F4F6', borderRadius: '4px', fontSize: '0.875rem' }}>
                                         {item.category?.name}
                                     </span>
+                                </td>
+                                <td style={{ padding: '1rem' }}>
+                                    {item.resource ? (
+                                        <span style={{ padding: '0.25rem 0.5rem', background: '#DBEAFE', borderRadius: '4px', fontSize: '0.875rem', color: '#1E40AF' }}>
+                                            {item.resource.name}
+                                        </span>
+                                    ) : (
+                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>General</span>
+                                    )}
                                 </td>
                                 <td style={{ padding: '1rem' }}>{item.description || '-'}</td>
                                 <td style={{ padding: '1rem' }}>
@@ -231,6 +248,16 @@ const Expenses = () => {
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem' }}>Amount</label>
                                 <input type="number" required style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                                     value={formData.amount} onChange={e => setFormData({ ...formData, amount: e.target.value })} />
+                            </div>
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem' }}>Hall (Optional)</label>
+                                <select style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                                    value={formData.resource_id} onChange={e => setFormData({ ...formData, resource_id: e.target.value })}>
+                                    <option value="">-- General Expense --</option>
+                                    {halls.map(hall => (
+                                        <option key={hall.id} value={hall.id}>{hall.name}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div style={{ marginBottom: '1rem' }}>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem' }}>Link to Event (Optional)</label>

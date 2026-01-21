@@ -14,6 +14,7 @@ class Expense extends Model
 
     protected $fillable = [
         'center_id',
+        'resource_id',
         'event_id',
         'category_id',
         'amount',
@@ -30,5 +31,10 @@ class Expense extends Model
     public function event()
     {
         return $this->belongsTo(Event::class);
+    }
+
+    public function resource()
+    {
+        return $this->belongsTo(Resource::class);
     }
 }
