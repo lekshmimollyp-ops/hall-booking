@@ -14,30 +14,44 @@ class ReportController extends Controller
     {
         $centerId = $request->validated_center_id;
         $currentMonth = now()->month;
+        $accessibleResourceIds = $request->accessible_resource_ids;
 
         // REF: User requested Income based on Booking Date (Event Date), not Received Date
+        // Filter by accessible halls
         $monthlyIncome = Income::join('events', 'incomes.event_id', '=', 'events.id')
                                ->where('incomes.center_id', $centerId)
+                               ->whereIn('events.resource_id', $accessibleResourceIds)
                                ->whereMonth('events.event_date', $currentMonth)
                                ->sum('incomes.amount_received');
 
+        // Filter expenses by accessible halls (include general expenses with null resource_id)
         $monthlyExpense = Expense::where('center_id', $centerId)
+                                 ->where(function($q) use ($accessibleResourceIds) {
+                                     $q->whereIn('resource_id', $accessibleResourceIds)
+                                       ->orWhereNull('resource_id');
+                                 })
                                  ->whereMonth('expense_date', $currentMonth)
                                  ->sum('amount');
 
+        // Filter events by accessible halls
         $upcomingEvents = Event::where('center_id', $centerId)
+                               ->whereIn('resource_id', $accessibleResourceIds)
                                ->where('event_date', '>=', now())
                                ->whereIn('status', ['booked', 'blocked'])
                                ->count();
 
-        $totalEvents = Event::where('center_id', $centerId)->count();
+        $totalEvents = Event::where('center_id', $centerId)
+                            ->whereIn('resource_id', $accessibleResourceIds)
+                            ->count();
 
         $recentEvents = Event::where('center_id', $centerId)
+                             ->whereIn('resource_id', $accessibleResourceIds)
                              ->orderBy('created_at', 'desc')
                              ->take(5)
                              ->get();
 
         $eventsByType = Event::where('center_id', $centerId)
+                             ->whereIn('resource_id', $accessibleResourceIds)
                              ->selectRaw('event_type, count(*) as count')
                              ->groupBy('event_type')
                              ->get();
@@ -45,7 +59,7 @@ class ReportController extends Controller
         $center = \App\Models\Center::find($centerId);
 
         // Get accessible halls for the user
-        $accessibleHalls = \App\Models\Resource::whereIn('id', $request->accessible_resource_ids)
+        $accessibleHalls = \App\Models\Resource::whereIn('id', $accessibleResourceIds)
                                                 ->select('id', 'name')
                                                 ->get();
 
