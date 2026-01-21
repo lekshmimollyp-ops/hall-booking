@@ -68,6 +68,30 @@ sudo mv composer.phar /usr/local/bin/composer
     *The system supports 6 payment modes: `cash`, `card`, `upi`, `bank_transfer`, `cheque`, `other`*
     *All payment modes must be lowercase for database compatibility.*
 
+4.  **Note on Branding**:
+    *The system features **dynamic branding** - the login page and application title automatically display the center name from the database. No need to edit frontend code for each client!*
+    *The center name is set when you create the center record in the database.*
+
+5.  **Create Expense Categories** (Required):
+    ```bash
+    php artisan tinker
+    ```
+    ```php
+    $center = App\Models\Center::first();
+    
+    $categories = ['Cleaning', 'Electricity', 'Maintenance', 'Staff Salary', 'Supplies', 'Other'];
+    foreach ($categories as $cat) {
+        App\Models\ExpenseCategory::create([
+            'center_id' => $center->id,
+            'name' => $cat,
+            'status' => 'active'
+        ]);
+    }
+    echo "Expense categories created!\n";
+    exit
+    ```
+    *This creates the default expense categories needed for the Expenses module.*
+
 ### D. File Permissions
 Ensure the web server can write to logs and cache:
 sudo chmod -R 775 storage bootstrap/cache
