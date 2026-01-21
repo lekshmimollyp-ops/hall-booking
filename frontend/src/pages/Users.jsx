@@ -235,17 +235,32 @@ const Users = () => {
                 </table>
             </div>
 
-            {/* MODAL */}
             {showModal && (
                 <div style={{
                     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 50
+                    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 50,
+                    padding: '1rem'
                 }}>
-                    <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', width: '400px', maxWidth: '90%' }}>
-                        <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', fontWeight: 'bold' }}>
-                            {editingUser ? 'Edit User' : 'Create User'}
-                        </h2>
-                        <form onSubmit={handleSubmit}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        width: '500px',
+                        maxWidth: '100%',
+                        maxHeight: '90vh',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: 'hidden'
+                    }}>
+                        <div style={{ padding: '1.5rem', borderBottom: '1px solid #eee' }}>
+                            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 'bold' }}>
+                                {editingUser ? 'Edit User' : 'Create User'}
+                            </h2>
+                        </div>
+                        <form onSubmit={handleSubmit} style={{
+                            padding: '1.5rem',
+                            overflowY: 'auto',
+                            flex: 1
+                        }}>
                             <div style={{ marginBottom: '1rem' }}>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem' }}>Name</label>
                                 <input
