@@ -69,7 +69,18 @@ const Dashboard = () => {
     return (
         <div>
             <div style={{ marginBottom: '1.5rem' }}>
-                <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.5rem' }}>Dashboard Overview</h1>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--text-main)', margin: 0 }}>Dashboard Overview</h1>
+                    {stats?.user_name && (
+                        <div style={{
+                            fontSize: '0.875rem',
+                            color: 'var(--text-muted)',
+                            fontWeight: 500
+                        }}>
+                            Welcome, <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{stats.user_name}</span>
+                        </div>
+                    )}
+                </div>
                 {stats?.accessible_halls && (
                     <div style={{
                         display: 'flex',

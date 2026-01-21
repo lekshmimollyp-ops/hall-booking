@@ -52,6 +52,7 @@ class ReportController extends Controller
         return response()->json([
             'center_name' => $center ? $center->name : 'Unknown Center',
             'center_id' => $centerId,
+            'user_name' => $request->user()->name,
             'accessible_halls' => $accessibleHalls,
             'monthly_income' => $monthlyIncome,
             'monthly_expense' => $monthlyExpense,
