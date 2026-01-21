@@ -92,8 +92,37 @@ sudo mv composer.phar /usr/local/bin/composer
     ```
     *This creates the default expense categories needed for the Expenses module.*
 
+6.  **Assign Users to Halls** (Required for Access Control):
+    ```bash
+    php artisan tinker
+    ```
+    ```php
+    // Assign all users to all halls in their centers
+    $users = App\Models\User::with('centers')->get();
+    
+    foreach ($users as $user) {
+        foreach ($user->centers as $center) {
+            $halls = App\Models\Resource::where('center_id', $center->id)->pluck('id');
+            $user->resources()->syncWithoutDetaching($halls);
+        }
+    }
+    
+    echo "Users assigned to halls!\n";
+    exit
+    ```
+    *This assigns all existing users to all halls in their centers, preserving current access levels.*
+    
+    **Important Notes on Hall-Based Access Control:**
+    - **Admin users** automatically have access to all halls in their centers
+    - **Staff users** can only access halls they are assigned to
+    - Users can be assigned to multiple halls
+    - Hall assignments are managed via the Users page in the admin panel
+    - Events, expenses, and income are filtered by accessible halls
+    - When creating a new user, you MUST assign at least one hall
+
 ### D. File Permissions
 Ensure the web server can write to logs and cache:
+```bash
 sudo chmod -R 775 storage bootstrap/cache
 ```
 
