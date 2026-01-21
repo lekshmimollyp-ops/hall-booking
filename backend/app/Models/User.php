@@ -83,8 +83,9 @@ class User extends Authenticatable
     public function getAccessibleResourceIds()
     {
         if ($this->role === 'admin') {
-            // Get all resources in user's centers
-            return Resource::whereIn('center_id', $this->centers->pluck('id'))->pluck('id');
+            // Get all resources in user's centers (load centers if not loaded)
+            $centerIds = $this->centers()->pluck('centers.id');
+            return Resource::whereIn('center_id', $centerIds)->pluck('id');
         }
         return $this->resources()->pluck('resources.id');
     }
