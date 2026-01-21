@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,7 +6,23 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [appName, setAppName] = useState('Hall Booking'); // Default fallback
     const navigate = useNavigate();
+
+    // Fetch app branding on component mount
+    useEffect(() => {
+        const fetchBranding = async () => {
+            try {
+                const response = await axios.get('/api/public/branding');
+                if (response.data?.center_name) {
+                    setAppName(response.data.center_name);
+                }
+            } catch (err) {
+                console.log('Could not fetch branding, using default');
+            }
+        };
+        fetchBranding();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -36,7 +52,7 @@ const Login = () => {
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f2f5' }}>
             <div style={{ padding: '2rem', background: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '300px' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#1a1a1a' }}>MT Hall</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#1a1a1a' }}>{appName}</h2>
                 {error && <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem', textAlign: 'center' }}>{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div style={{ marginBottom: '1rem' }}>

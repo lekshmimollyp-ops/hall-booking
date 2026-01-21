@@ -39,6 +39,14 @@ Route::get('/login', function() {
 })->name('login');
 
 Route::get('/public/calendar/{centerId}', [EventController::class, 'publicCalendar']);
+Route::get('/public/branding', function() {
+    $center = \App\Models\Center::first();
+    return response()->json([
+        'center_name' => $center?->name ?? 'Hall Booking',
+        'center_logo' => $center?->logo_url,
+        'primary_color' => $center?->primary_color ?? '#4F46E5'
+    ]);
+});
 
 // Protected Routes
 Route::middleware(['auth:sanctum', 'center'])->group(function () {
