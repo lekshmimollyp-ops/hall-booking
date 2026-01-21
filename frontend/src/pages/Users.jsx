@@ -5,6 +5,7 @@ import { FaPlus, FaEdit, FaTrash, FaUserShield, FaUser, FaToggleOn, FaToggleOff 
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [centers, setCenters] = useState([]); // Available centers for assignment
+    const [resources, setResources] = useState([]); // Available halls for assignment
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
@@ -16,7 +17,8 @@ const Users = () => {
         phone: '',
         password: '',
         role: 'staff',
-        center_ids: []
+        center_ids: [],
+        resource_ids: []
     });
 
     const fetchUsers = async () => {
@@ -45,9 +47,26 @@ const Users = () => {
         }
     };
 
+    const fetchResources = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const centerId = localStorage.getItem('center_id');
+            const res = await axios.get('/api/resources', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'X-Center-ID': centerId
+                }
+            });
+            setResources(res.data);
+        } catch (error) {
+            console.error('Failed to load resources', error);
+        }
+    };
+
     useEffect(() => {
         fetchUsers();
         fetchCenters();
+        fetchResources();
     }, []);
 
     const handleSubmit = async (e) => {
@@ -78,7 +97,8 @@ const Users = () => {
             phone: user.phone || '',
             password: '', // Don't show password
             role: user.role,
-            center_ids: user.centers.map(c => c.id)
+            center_ids: user.centers.map(c => c.id),
+            resource_ids: user.resources?.map(r => r.id) || []
         });
         setShowModal(true);
     };
@@ -91,7 +111,8 @@ const Users = () => {
             phone: '',
             password: '',
             role: 'staff',
-            center_ids: []
+            center_ids: [],
+            resource_ids: []
         });
         setShowModal(true);
     };
@@ -137,7 +158,7 @@ const Users = () => {
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Name</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Contact</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Role</th>
-                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Assigned Centers</th>
+                            <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Assigned Halls</th>
                             <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-muted)' }}>Status</th>
                             <th style={{ padding: '1rem', textAlign: 'right', fontWeight: 600, color: 'var(--text-muted)' }}>Actions</th>
                         </tr>
@@ -168,17 +189,31 @@ const Users = () => {
                                 </td>
                                 <td style={{ padding: '1rem' }}>
                                     <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
-                                        {user.centers.map(center => (
-                                            <span key={center.id} style={{
-                                                backgroundColor: '#F3F4F6',
+                                        {user.role === 'admin' ? (
+                                            <span style={{
+                                                backgroundColor: '#FEF3C7',
                                                 padding: '0.125rem 0.375rem',
                                                 borderRadius: '4px',
                                                 fontSize: '0.75rem',
-                                                border: '1px solid #E5E7EB'
+                                                border: '1px solid #FDE68A',
+                                                color: '#D97706'
                                             }}>
-                                                {center.name}
+                                                All Halls
                                             </span>
-                                        ))}
+                                        ) : (
+                                            user.resources?.map(resource => (
+                                                <span key={resource.id} style={{
+                                                    backgroundColor: '#DBEAFE',
+                                                    padding: '0.125rem 0.375rem',
+                                                    borderRadius: '4px',
+                                                    fontSize: '0.75rem',
+                                                    border: '1px solid #BFDBFE',
+                                                    color: '#1E40AF'
+                                                }}>
+                                                    {resource.name}
+                                                </span>
+                                            ))
+                                        )}
                                     </div>
                                 </td>
                                 <td style={{ padding: '1rem' }}>
@@ -268,7 +303,7 @@ const Users = () => {
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem' }}>Centers</label>
                                 <select
                                     multiple
-                                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', height: '100px' }}
+                                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', height: '80px' }}
                                     value={formData.center_ids}
                                     onChange={e => setFormData({ ...formData, center_ids: Array.from(e.target.selectedOptions, option => parseInt(option.value)) })}
                                 >
@@ -277,6 +312,21 @@ const Users = () => {
                                     ))}
                                 </select>
                                 <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem' }}>Hold Ctrl/Cmd to select multiple</p>
+                            </div>
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>Assigned Halls *</label>
+                                <select
+                                    multiple
+                                    required
+                                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', height: '120px' }}
+                                    value={formData.resource_ids}
+                                    onChange={e => setFormData({ ...formData, resource_ids: Array.from(e.target.selectedOptions, option => parseInt(option.value)) })}
+                                >
+                                    {resources.map(resource => (
+                                        <option key={resource.id} value={resource.id}>{resource.name}</option>
+                                    ))}
+                                </select>
+                                <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem' }}>Hold Ctrl/Cmd to select multiple halls. At least one hall is required.</p>
                             </div>
                             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
                                 <button

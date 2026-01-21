@@ -68,7 +68,39 @@ const Dashboard = () => {
 
     return (
         <div>
-            <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '1.5rem' }}>Dashboard Overview</h1>
+            <div style={{ marginBottom: '1.5rem' }}>
+                <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.5rem' }}>Dashboard Overview</h1>
+                {stats?.accessible_halls && (
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        padding: '0.75rem 1rem',
+                        backgroundColor: '#EEF2FF',
+                        borderRadius: '8px',
+                        border: '1px solid #C7D2FE'
+                    }}>
+                        <span style={{ fontSize: '0.875rem', color: '#4F46E5', fontWeight: 500 }}>
+                            Managing Halls:
+                        </span>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            {stats.accessible_halls.map(hall => (
+                                <span key={hall.id} style={{
+                                    backgroundColor: '#DBEAFE',
+                                    padding: '0.25rem 0.75rem',
+                                    borderRadius: '999px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 600,
+                                    color: '#1E40AF',
+                                    border: '1px solid #BFDBFE'
+                                }}>
+                                    {hall.name}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
                 <StatCard

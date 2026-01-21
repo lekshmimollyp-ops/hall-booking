@@ -44,9 +44,15 @@ class ReportController extends Controller
 
         $center = \App\Models\Center::find($centerId);
 
+        // Get accessible halls for the user
+        $accessibleHalls = \App\Models\Resource::whereIn('id', $request->accessible_resource_ids)
+                                                ->select('id', 'name')
+                                                ->get();
+
         return response()->json([
             'center_name' => $center ? $center->name : 'Unknown Center',
             'center_id' => $centerId,
+            'accessible_halls' => $accessibleHalls,
             'monthly_income' => $monthlyIncome,
             'monthly_expense' => $monthlyExpense,
             'profit' => $monthlyIncome - $monthlyExpense,
