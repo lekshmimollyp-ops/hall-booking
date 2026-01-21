@@ -65,4 +65,24 @@ The **Dashboard** gives you a quick overview of the current month:
 1.  Go to **Users**.
 2.  Click **Add User**.
 3.  Enter their Name, Email, and Role (Admin or Staff).
-4.  **Resetting Passwords**: To change a password, click **Edit** on a user, type the new password, and Save.
+4.  **Assign Halls**: Select which halls this user can manage (required - at least one hall must be selected).
+    - **Admin users** automatically have access to all halls
+    - **Staff users** can only access the halls you assign to them
+5.  Click **Save**.
+
+### Managing User Hall Access
+1.  Go to **Users**.
+2.  Click **Edit** on a user.
+3.  In the **Assigned Halls** dropdown, select or deselect halls.
+4.  Click **Save**.
+
+**Important Notes:**
+- Users can only see and manage events/expenses for their assigned halls
+- Users must be assigned to at least one hall
+- Admin users always have access to all halls regardless of assignments
+
+### Resetting Passwords
+1.  Go to **Users**.
+2.  Click **Edit** on a user.
+3.  Enter the new password in the Password field.
+4.  Click **Save**.
