@@ -178,7 +178,7 @@ const Settings = () => {
                                         <input
                                             type="text"
                                             required
-                                            placeholder="e.g., MT Hall"
+                                            placeholder="e.g., Hall"
                                             style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px' }}
                                             value={formData.name}
                                             onChange={e => setFormData({ ...formData, name: e.target.value })}
