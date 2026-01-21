@@ -16,6 +16,9 @@ class EventController extends Controller
         $query = Event::where('center_id', $request->validated_center_id)
                       ->with(['client', 'resource']); // Load resource
 
+        // Filter by accessible resources (hall-based access control)
+        $query->whereIn('resource_id', $request->accessible_resource_ids);
+
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
@@ -50,7 +53,15 @@ class EventController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'event_type' => 'required',
-            'resource_id' => 'required|exists:resources,id',
+            'resource_id' => [
+                'required',
+                'exists:resources,id',
+                function ($attribute, $value, $fail) use ($request) {
+                    if (!$request->user()->hasAccessToResource($value)) {
+                        $fail('You do not have access to this hall.');
+                    }
+                }
+            ],
             'discount' => 'nullable|numeric|min:0',
         ]);
 

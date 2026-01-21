@@ -44,6 +44,9 @@ class CheckCenterScope
         // 4. Inject validated center_id into request for Controllers
         $request->merge(['validated_center_id' => $centerId]);
 
+        // 5. Inject accessible resource IDs for hall-based access control
+        $request->merge(['accessible_resource_ids' => $user->getAccessibleResourceIds()]);
+
         return $next($request);
     }
 }

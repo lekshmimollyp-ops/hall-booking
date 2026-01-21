@@ -21,7 +21,7 @@ class UserController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $users = User::with('centers:id,name')->orderBy('created_at', 'desc')->get();
+        $users = User::with(['centers:id,name', 'resources:id,name'])->orderBy('created_at', 'desc')->get();
         return response()->json($users);
     }
 
@@ -42,6 +42,8 @@ class UserController extends Controller
             'role' => 'required|in:admin,staff',
             'center_ids' => 'required|array',
             'center_ids.*' => 'exists:centers,id',
+            'resource_ids' => 'required|array|min:1',
+            'resource_ids.*' => 'exists:resources,id',
         ]);
 
         try {
@@ -57,10 +59,11 @@ class UserController extends Controller
             ]);
 
             $user->centers()->sync($request->center_ids);
+            $user->resources()->sync($request->resource_ids);
 
             DB::commit();
 
-            return response()->json($user->load('centers'), 201);
+            return response()->json($user->load(['centers', 'resources']), 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -85,6 +88,8 @@ class UserController extends Controller
             'role' => 'sometimes|in:admin,staff',
             'center_ids' => 'sometimes|array',
             'center_ids.*' => 'exists:centers,id',
+            'resource_ids' => 'sometimes|array|min:1',
+            'resource_ids.*' => 'exists:resources,id',
         ]);
 
         try {
@@ -105,9 +110,13 @@ class UserController extends Controller
                 $user->centers()->sync($request->center_ids);
             }
 
+            if ($request->has('resource_ids')) {
+                $user->resources()->sync($request->resource_ids);
+            }
+
             DB::commit();
 
-            return response()->json($user->load('centers'));
+            return response()->json($user->load(['centers', 'resources']));
 
         } catch (\Exception $e) {
             DB::rollBack();

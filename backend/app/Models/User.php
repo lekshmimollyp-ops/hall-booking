@@ -54,4 +54,38 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Center::class, 'user_centers');
     }
+
+    /**
+     * Get the resources (halls) assigned to this user
+     */
+    public function resources()
+    {
+        return $this->belongsToMany(Resource::class, 'resource_user')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Check if user has access to a specific resource (hall)
+     * Admins always have access to all resources
+     */
+    public function hasAccessToResource($resourceId)
+    {
+        if ($this->role === 'admin') {
+            return true; // Admins have access to all halls
+        }
+        return $this->resources()->where('resources.id', $resourceId)->exists();
+    }
+
+    /**
+     * Get IDs of all resources (halls) this user can access
+     * Admins get all resources in their centers
+     */
+    public function getAccessibleResourceIds()
+    {
+        if ($this->role === 'admin') {
+            // Get all resources in user's centers
+            return Resource::whereIn('center_id', $this->centers->pluck('id'))->pluck('id');
+        }
+        return $this->resources()->pluck('resources.id');
+    }
 }
